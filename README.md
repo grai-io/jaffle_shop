@@ -3,7 +3,6 @@
 `jaffle_shop` is a fictional eCommerce store invented by our friends at DBT. The original DBT repository from which this is forked, transformed raw data into two models, customer and orders, ready for analytics. This repo builds on that to allow you to create a grai project with two connectors from the same data, DBT and postgres. 
 
 ### What is this repo?
-What this repo _is_:
 - A self-contained playground grai project, focused on postgres and DBT.
 - Pre-requisites are Docker, Python and a spirit of adventure.
 
