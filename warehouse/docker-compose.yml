@@ -5,9 +5,10 @@ services:
     container_name: grai-jaffle-test
     restart: unless-stopped
     ports:
-      - 5432:5432
+      - 5433:5433
     environment:
       - DATABASE_PASSWORD=docker
       - DATABASE_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_USER=docker
+    command: -p 5433

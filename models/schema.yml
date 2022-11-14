@@ -80,3 +80,31 @@ models:
         description: Amount of the order (AUD) paid for by gift card
         tests:
           - not_null
+
+  - name: payments
+    description: This table has basic information about orders, as well as some derived facts based on payments
+
+    columns:
+      - name: payment_id
+        tests:
+          - unique
+          - not_null
+        description: This is a unique identifier for a payment
+
+      - name: order_id
+        description: Foreign key to the orders table
+        tests:
+          - not_null
+          - relationships:
+              to: ref('orders')
+              field: order_id
+
+      - name: payment_method
+        description: Method of payment
+        tests:
+          - not_null
+
+      - name: amount
+        description: Amount of payment
+        tests:
+          - not_null
