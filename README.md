@@ -18,7 +18,7 @@ docker compose up
 
 2. Navigate to a new folder and clone this repository.
 ```bash
-$ git clone https://github.com/TonyLLondon/jaffle_shop_grai.git
+$ git clone https://github.com/grai-io/jaffle_shop.git
 ```
 
 3. Change into the `jaffle_shop` directory from the command line:
