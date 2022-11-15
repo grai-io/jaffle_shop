@@ -6,7 +6,10 @@ start:
 
 run:
 	dbt build --profiles-dir ./profiles
-	dbt run --profiles-dir ./profiles
+
+all:
+	docker-compose -f ./warehouse/docker-compose.yml up -d
+	dbt build --profiles-dir ./profiles
 
 cleanup:
 	docker-compose -f ./warehouse/docker-compose.yml down

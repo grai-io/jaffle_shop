@@ -1,13 +1,45 @@
 version: "3.7"
 services:
-  db:
+  db_dbt:
     image: postgres:14.3-bullseye
     container_name: grai-jaffle-test
     restart: unless-stopped
     ports:
-      - 5432:5432
+      - 5433:5433
     environment:
       - DATABASE_PASSWORD=docker
       - DATABASE_USER=docker
       - POSTGRES_PASSWORD=docker
       - POSTGRES_USER=docker
+    command: -p 5433
+  server:
+    image: ghcr.io/grai-io/grai-core/grai-server:dev
+    ports:
+      - 8000:8000
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=docker
+      - DB_USER=docker
+      - DB_PASSWORD=docker
+      - DJANGO_SUPERUSER_USERNAME=null@grai.io
+      - DJANGO_SUPERUSER_PASSWORD=super_secret
+    depends_on: 
+      - db
+  db:
+    image: postgres:14.3-alpine
+    environment:
+      - POSTGRES_USER=docker
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=docker
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: "pg_isready -U docker"
+      interval: 2s
+      timeout: 2s
+      retries: 15
+  frontend:
+    image: ghcr.io/grai-io/grai-core/grai-frontend:latest
+    ports:
+      - 3000:80

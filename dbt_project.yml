@@ -24,3 +24,9 @@ models:
       materialized: table
       staging:
         materialized: view
+
+on-run-end:
+    - "ALTER TABLE dbt_alice.customers ADD CONSTRAINT unique_customers UNIQUE (customer_id)"
+    - "ALTER TABLE dbt_alice.orders ADD CONSTRAINT unique_orders UNIQUE (order_id)"
+    - "ALTER TABLE dbt_alice.orders ADD CONSTRAINT fk_orders_customers FOREIGN KEY (customer_id) REFERENCES dbt_alice.customers (customer_id)"
+    - "ALTER TABLE dbt_alice.payments ADD CONSTRAINT fk_payments_orders FOREIGN KEY (order_id) REFERENCES dbt_alice.orders (order_id)"

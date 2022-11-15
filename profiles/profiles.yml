@@ -6,7 +6,7 @@ jaffle_shop:
       host: localhost
       user: docker
       password: docker
-      port: 5432
+      port: 5433
       dbname: docker
       schema: dbt_alice
       threads: 4

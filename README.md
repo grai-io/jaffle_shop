@@ -1,70 +1,71 @@
-## Testing dbt project: `jaffle_shop`
+## Testing grai with DBT and Postgres project: `jaffle_shop_grai`
 
-`jaffle_shop` is a fictional ecommerce store. This dbt project transforms raw data from an app database into a customers and orders model ready for analytics.
+`jaffle_shop` is a fictional eCommerce store invented by our friends at DBT. The original DBT repository from which this is forked, transformed raw data into two models, customer and orders, ready for analytics. This repo builds on that to allow you to create a grai project with two connectors from the same data, DBT and postgres. 
 
 ### What is this repo?
-What this repo _is_:
-- A self-contained playground dbt project, useful for testing out scripts, and communicating some of the core dbt concepts.
-
-What this repo _is not_:
-- A tutorial — check out the [Getting Started Tutorial](https://docs.getdbt.com/tutorial/setting-up) for that. Notably, this repo contains some anti-patterns to make it self-contained, namely the use of seeds instead of sources.
-- A demonstration of best practices — check out the [dbt Learn Demo](https://github.com/dbt-labs/dbt-learn-demo) repo instead. We want to keep this project as simple as possible. As such, we chose not to implement:
-    - our standard file naming patterns (which make more sense on larger projects, rather than this five-model project)
-    - a pull request flow
-    - CI/CD integrations
-- A demonstration of using dbt for a high-complex project, or a demo of advanced features (e.g. macros, packages, hooks, operations) — we're just trying to keep things simple here!
-
-### What's in this repo?
-This repo contains [seeds](https://docs.getdbt.com/docs/building-a-dbt-project/seeds) that includes some (fake) raw data from a fictional app.
-
-The raw data consists of customers, orders, and payments, with the following entity-relationship diagram:
-
-![Jaffle Shop ERD](/etc/jaffle_shop_erd.png)
-
+- A self-contained playground grai project, focused on postgres and DBT.
+- Pre-requisites are Docker, Python and a spirit of adventure.
 
 ### Running this project
 To get up and running with this project:
-1. Install dbt using [these instructions](https://docs.getdbt.com/docs/installation).
 
-2. Clone this repository.
-
-3. Change into the `jaffle_shop` directory from the command line:
+1. Clone this repository and change into the `jaffle_shop` directory.
 ```bash
+$ git clone https://github.com/grai-io/jaffle_shop.git
 $ cd jaffle_shop
 ```
 
-4. Set up a profile called `jaffle_shop` to connect to a data warehouse by following [these instructions](https://docs.getdbt.com/docs/configure-your-profile). If you have access to a data warehouse, you can use those credentials – we recommend setting your [target schema](https://docs.getdbt.com/docs/configure-your-profile#section-populating-your-profile) to be a new schema (dbt will create the schema for you, as long as you have the right privileges). If you don't have access to an existing data warehouse, you can also setup a local postgres database and connect to it in your profile.
-
-5. Ensure your profile is setup correctly from the command line:
+2. Run docker compose, this will create 4 docker countainers. For grai you are running the frontend, the backend, and the postgres database. For jaffle shop you are running a second postgres database on port 5433 to avoid conflicts.
+Create docker container for the Postgres database. Note this is setup to use port 5433 to avoid conflicts. 
 ```bash
-$ dbt debug
+$ docker-compose -f ./warehouse/docker-compose.yml up -d
 ```
 
-6. Load the CSVs with the demo data set. This materializes the CSVs as tables in your target schema. Note that a typical dbt project **does not require this step** since dbt assumes your raw data is already in your warehouse.
+3. Install DBT for Postgres, don't worry about configuring it, the repository includes a profiles file to work with your new local postgres database.
 ```bash
-$ dbt seed
+$ pip install dbt-postgres
 ```
 
-7. Run the models:
+4. Run DBT, this will build your Postgres database from the jaffle shop seed files. It will also create foreign key relationships (not normally done with DBT, but essential to your production postgres!)
 ```bash
-$ dbt run
+$ dbt build --profiles-dir ./profiles
 ```
 
-> **NOTE:** If this steps fails, it might mean that you need to make small changes to the SQL in the models folder to adjust for the flavor of SQL of your target database. Definitely consider this if you are using a community-contributed adapter.
-
-8. Test the output of the models:
+5. Almost there! You now should have four docker containers running, and its time to pull it all together. Install grai CLI and the postgres and DBT connectors.
 ```bash
-$ dbt test
+$ pip install grai-cli
+$ pip install grai-source-postgres
+$ pip install grai-source-dbt
 ```
 
-9. Generate documentation for the project:
+6. Run the final script to read from DBT and postgres to populate your grai server.
 ```bash
-$ dbt docs generate
+$ python populate_grai.py
 ```
 
-10. View the documentation for the project:
+7. Checkout the results of your work! Log in to your new shiny grai frontend here: [http://localhost:3000](http://localhost:3000). Amongst other things you can see columns and tables as Nodes with edges reflecting connections in DBT and foreign keys between your tables.
+
+Default login credentials:
+
+```
+username: null@grai.io
+password: super_secret
+```
+
+Optional:
+8. Run a counterfactual! Maybe we wanted to find out all of the data which would be impacted by deleting the `id` column on the `lineage_node` table.
+
 ```bash
-$ dbt docs serve
+$ python
+```
+
+```python
+affected_nodes = analysis.test_delete_node(namespace='default', name='public.lineage_node.id')
+for node in affected_nodes:
+    print(node.spec.name)
+
+> public.lineage_edge.source_id
+> public.lineage_edge.destination_id
 ```
 
 ### What is a jaffle?
@@ -73,6 +74,4 @@ A jaffle is a toasted sandwich with crimped, sealed edges. Invented in Bondi in 
 ---
 For more information on dbt:
 - Read the [introduction to dbt](https://docs.getdbt.com/docs/introduction).
-- Read the [dbt viewpoint](https://docs.getdbt.com/docs/about/viewpoint).
-- Join the [dbt community](http://community.getdbt.com/).
 ---
