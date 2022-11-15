@@ -8,51 +8,42 @@
 
 ### Running this project
 To get up and running with this project:
-1. Spin up grai locally
-```
-git clone https://github.com/grai-io/grai-core
-cd grai-core/grai-server
-docker compose up
-```
 
-2. Navigate to a new folder and clone this repository.
+1. Clone this repository and change into the `jaffle_shop` directory.
 ```bash
 $ git clone https://github.com/grai-io/jaffle_shop.git
-```
-
-3. Change into the `jaffle_shop` directory from the command line:
-```bash
 $ cd jaffle_shop
 ```
 
-4. Create docker container for the Postgres database. Note this is setup to use port 5433 to avoid conflicts. 
+2. Run docker compose, this will create 4 docker countainers. For grai you are running the frontend, the backend, and the postgres database. For jaffle shop you are running a second postgres database on port 5433 to avoid conflicts.
+Create docker container for the Postgres database. Note this is setup to use port 5433 to avoid conflicts. 
 ```bash
 $ docker-compose -f ./warehouse/docker-compose.yml up -d
 ```
 
-5. Install DBT for Postgres, don't worry about configuring it, the repository includes a profiles file to work with your new local postgres database.
+3. Install DBT for Postgres, don't worry about configuring it, the repository includes a profiles file to work with your new local postgres database.
 ```bash
 $ pip install dbt-postgres
 ```
 
-6. Run DBT, this will build your Postgres database from the jaffle shop seed files. It will also create foreign key relationships (not normally done with DBT, but essential to your production postgres!)
+4. Run DBT, this will build your Postgres database from the jaffle shop seed files. It will also create foreign key relationships (not normally done with DBT, but essential to your production postgres!)
 ```bash
 $ dbt build --profiles-dir ./profiles
 ```
 
-7. Almost there! You now should have four docker containers running, and its time to pull it all together. Install grai CLI and the postgres and DBT connectors.
+5. Almost there! You now should have four docker containers running, and its time to pull it all together. Install grai CLI and the postgres and DBT connectors.
 ```bash
 $ pip install grai-cli
 $ pip install grai-source-postgres
 $ pip install grai-source-dbt
 ```
 
-8. Run the final script to read from DBT and postgres to populate your grai server.
+6. Run the final script to read from DBT and postgres to populate your grai server.
 ```bash
 $ python populate_grai.py
 ```
 
-9. Checkout the results of your work! Log in to your new shiny grai frontend here: [http://localhost:3000](http://localhost:3000). Amongst other things you can see Columns and Tables as Nodes with edges reflecting connections in DBT and Foreign Keys between your tables.
+7. Checkout the results of your work! Log in to your new shiny grai frontend here: [http://localhost:3000](http://localhost:3000). Amongst other things you can see columns and tables as Nodes with edges reflecting connections in DBT and foreign keys between your tables.
 
 Default login credentials:
 
@@ -62,7 +53,7 @@ password: super_secret
 ```
 
 Optional:
-10. Run a counterfactual! Maybe we wanted to find out all of the data which would be impacted by deleting the `id` column on the `lineage_node` table.
+8. Run a counterfactual! Maybe we wanted to find out all of the data which would be impacted by deleting the `id` column on the `lineage_node` table.
 
 ```bash
 $ python
